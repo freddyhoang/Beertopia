@@ -1,0 +1,46 @@
+h1{
+    text-align: center;
+}
+h3{
+    text-align: center;
+}
+
+#scroll-box-title{
+    text-align: center;
+}
+
+body {
+    background-color:rgb(244, 253, 255);
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+li {
+    display: inline;
+}
+
+.carousel-inner img {
+    width: 500px; /*set the width or max-width*/
+    height: auto; /*this makes sure to maintain the aspect ratio*/
+}
+
+#asterisk {
+    text-align: top;
+    font-size: 10px;
+}
+
+#downloadbutton {
+    text-align: center;
+}
+
+#scroll {
+    width: 30vw;
+    height: 30vh;
+    font-size: 1vw;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+}
+
+.tight {
+    padding: .25rem;
+}

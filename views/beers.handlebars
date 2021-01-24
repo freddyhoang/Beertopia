@@ -1,0 +1,69 @@
+
+
+<div class="container">
+
+  <div class="card text-center">
+    {{!-- card header, contains all the forms to create Sets --}}
+    <div class="card-header">
+      <h1>Beer information</h1>
+      <hr class='my-4'>
+      Take a look at all the beer information
+      <hr class='my-4'>
+      {{!-- alert message for when the minimum isn't entered --}}
+      <div id="alert-time" role="alert">
+      </div>
+      {{!-- input forms --}}
+      Want to add in a beer?
+      <div class="form-row text-center">
+        <div class= "form-group col-md-2"></div>
+        <div class="form-group col-md-2">
+          <input type="text" class="form-control" name="beer_name" id="beer_name" placeholder="Lip Puckerer">
+        </div>
+
+        <div class="form-group col-md-1">
+          <input type="text" class="form-control" name="brewery" id="brewery" placeholder="Pfriem">
+        </div>
+
+        <div class="form-group col-md-2">
+          <input type="number" class="form-control" name="abv" id="abv" placeholder="15.22%">
+        </div>
+
+        <div class="form-group col-md-2">
+          <input type="number" class="form-control" name="ibu" id="ibu" placeholder="7">
+        </div>
+
+        <div class="form-group col-md-1">
+          <input type="submit" name="Add" id='Add'>
+        </div>
+
+  	  </div>
+    </div>
+
+    <div class="card-body">
+      {{!-- contains the tables top rows --}}
+      <table class="table table-sm table-hover">
+        
+        <thead>
+          <tr>
+            <th scope="col">Beer</th>
+            <th scope="col">Brewery</th>
+            <th scope="col">ABV</th>
+            <th scope="col">IBU</th>
+            <th scope="col">Average Rating</th>
+          </tr>
+        </thead>
+
+        <tbody id="table-body"></tbody>
+
+      </table>
+
+    </div>
+
+    {{!-- a bunch of forms giving additional powers --}}
+    <div class="card-footer text-muted">
+      <input type="submit" class="btn btn-danger" id="ClearAll" name="Clear All" value="Clear All">
+    </div>
+
+  </div>
+
+</div>
