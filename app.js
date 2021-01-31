@@ -8,7 +8,7 @@ var express = require('express');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 3000);
+app.set('port', 9876);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
@@ -70,6 +70,14 @@ app.get('/categories', (req,res,next) => {
 
 app.get('/beer_categories', (req,res,next) => {
   res.render('beer_categories');
+});
+
+app.get('/users', (req,res,next) => {
+  res.render('users');
+});
+
+app.get('/ratings', (req,res,next) => {
+  res.render('ratings');
 });
 
 
