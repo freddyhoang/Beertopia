@@ -60,6 +60,10 @@ var getItAll = (res) => {
 // });
 
 // home
+app.get('/', (req,res,next) => {
+  res.render('home');
+});
+
 app.get('/beers', (req,res,next) => {
     res.render('beers');
 });

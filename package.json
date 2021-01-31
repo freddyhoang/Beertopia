@@ -1,5 +1,5 @@
 {
-  "name": "Beertopia",
+  "name": "beertopia",
   "version": "1.0.0",
   "description": "Beer Rating system with a SQL database",
   "main": "app.js",
