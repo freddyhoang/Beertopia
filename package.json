@@ -1,5 +1,5 @@
 {
-  "name": "Beertopia",
+  "name": "beertopia",
   "version": "1.0.0",
   "description": "Beer Rating system with a SQL database",
   "main": "app.js",
@@ -10,8 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.13.2",
-    "express-handlebars": "^5.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.4",
+    "handlebars": "^4.7.6",
     "mysql": "^2.18.1"
   }
 }

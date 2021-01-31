@@ -1,0 +1,69 @@
+<div class="container">
+
+  <div class="card text-center">
+    {{!-- card header, contains all the forms to create Sets --}}
+    <div class="card-header">
+      <h1>Welcome to Beertopia!</h1>
+
+      <hr class='my-4'>
+      Portland, OR currently has the most breweries out of any city in the world, with the city proper at 58, and a whopping 84 in the metro area.
+      This means hundreds, even thousands, of different local beers to try. At what point will you be able to remember what beer you drank
+      and whether you’ll want to drink it again? Beertopia to the rescue!
+      <hr class='my-4'>
+
+    </div>
+
+    <div class="card-body">
+      {{!--tiles link to subpages--}}
+      <div class="row">
+        <div class="col sm-6">
+          <a href="/beers">
+            <div class="card m-3" id="card1">
+              <div class="card-body">
+                <h5 class="card-title">Beers</h5>
+                  <p>See all of the current beers in the database, or add more!</p>
+              </div>
+            </div>
+          </a>
+        </div>  
+        <div class="col sm-6">
+          <a href="/users">
+            <div class="card m-3" id="card2">
+              <div class="card-body">
+                <h5 class="card-title">Sign-Up</h5>
+                  <p>Make an profile to keep track of all your ratings!</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div> 
+
+      <div class="row">
+        <div class="col sm-6">
+          <a href="/categories">
+            <div class="card m-3" id="card3">
+              <div class="card-body">
+                <h5 class="card-title">Categories</h5>
+                  <p>Browse the categories if you're feeling particular...</p>
+              </div>
+            </div>
+          </a>
+        </div>  
+
+        <div class="col sm-6">
+          <a href="/beer_categories">
+            <div class="card m-3" id="card4">
+              <div class="card-body">
+                <h5 class="card-title">Beer Categories</h5>
+                  <p>See the full list of which beers are in which categories!</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>  
+    
+    </div>
+
+  </div>
+
+</div>
