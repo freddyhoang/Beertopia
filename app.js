@@ -2,7 +2,7 @@
 var express = require('express');
     handlebars = require('express-handlebars').create({defaultLayout:'main'});
     app = express();
-    // mysql = require('./dbcon.js');
+    mysql = require('./dbcon.js');
     bodyParser = require("body-parser");
 ;
 
@@ -13,14 +13,14 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // set of strings to place into the app calls below
-var selectTableQuery = "SELECT * FROM workout";
-    insertRowQuery = "INSERT INTO workout (`exercise`, `reps`, `weight`, `units`, `date`) VALUES (?, ?, ?, ?, ?)";
-    selectRowQuery = "SELECT * FROM workout where id=?";
-    deleteRowQuery = "DELETE FROM workout WHERE id=?";
-    updateRowQuery = "UPDATE workout SET exercise=?, reps=?, weight=?, units=?, date=? WHERE id=?";
+var selectTableQuery = "SELECT * FROM Beers";
+    insertRowQuery = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
+    selectRowQuery = "SELECT * FROM Beers where beer_id=?";
+    deleteRowQuery = "DELETE FROM Beers WHERE beer_id=?";
+    updateRowQuery = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
 ;
 
-// function that retrieves the current SQL info
+//nction that retrieves the current SQL info
 var getItAll = (res) => {
   // function that obtains all the rows in the database
   mysql.pool.query(selectTableQuery, (err, rows, fields) => {
@@ -33,39 +33,34 @@ var getItAll = (res) => {
   });
 };
 
-// add a set to the workout
-// app.post('/',(req,res,next) => {
-//   // all the values from the post request
-//   var { exercise, reps, weight, units, date, id } = req.body;
-//   mysql.pool.query(insertRowQuery, 
-//     [exercise, reps, weight, units, date, id], 
-//     (err, result) => {
-//     if(err){
-//       next(err);
-//       return;
-//     }
-//     getItAll(res);
-//   });
-// });
-
-// get all the current rows in SQL
-// app.get('/', (req,res,next) => {
-//   mysql.pool.query(selectTableQuery, (err, rows, fields) => {
-//     if(err){
-//       next(err);
-//       return;
-//     }
-//     res.render('home');
-//   });
-// });
-
-// home
-app.get('/', (req,res,next) => {
-  res.render('home');
+// add a set to the Beers
+app.post('/beers',(req,res,next) => {
+  // all the values from the post request
+  var {beer_name, brewery, abv, ibu} = req.body;
+  mysql.pool.query(insertRowQuery, 
+    [beer_name, brewery, abv, ibu], 
+    (err, ret) => {
+    if(err){
+      next(err);
+      return;
+    }
+    getItAll(res);
+  });
 });
 
+// get all rows in Beers
 app.get('/beers', (req,res,next) => {
+  mysql.pool.query(selectTableQuery, (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
+    }
     res.render('beers');
+  });
+});
+
+app.get('/', (req,res,next) => {
+  res.render('home');
 });
 
 app.get('/categories', (req,res,next) => {
@@ -86,39 +81,40 @@ app.get('/ratings', (req,res,next) => {
 
 
 
-// delete a row in SQL
-// app.delete('/', (req,res,next) => {
-//   mysql.pool.query(deleteRowQuery, [req.body.rowId], (err, result) => {
-//     if(err){
-//       next(err);
-//       return;
-//     }
-//     getItAll(res);
-//   });
-// });
+// delete a row for Beers
+app.delete('/beers', (req,res,next) => {
+  mysql.pool.query(deleteRowQuery, [req.body.beer_id], (err, result) => {
+    if(err){
+      next(err);
+      return;
+    }
+    getItAll(res);
+  });
+});
 
-// update one row in the SQL database
-// app.put('/', (req,res,next) => {
-//   mysql.pool.query(selectRowQuery, [req.body.rowId], (err, result) => {
-//     if(err){
-//       next(err);
-//       return;
-//     }
-//     if(result.length == 1){
-//       var curVals = result[0];
-//       mysql.pool.query(updateRowQuery,
-//         [req.body.exercise || curVals.exercise, req.body.reps || curVals.reps, req.body.weight || curVals.weight,
-//           req.body.units || curVals.units, req.body.date || curVals.date, req.body.id || curVals.id],
-//         (err, result) => {
-//         if(err){
-//           next(err);
-//           return;
-//         }
-//         getItAll(res);
-//       });
-//     }
-//   });
-// });
+// update one row for Beers
+app.put('/beers', (req,res,next) => {
+  mysql.pool.query(selectRowQuery, [req.body.beer_id], (err, result) => {
+    if(err){
+      next(err);
+      return;
+    }
+    console.log(result.length, req.body.beer_id)
+    if(result.length == 1){
+      var curVals = result[0];
+      mysql.pool.query(updateRowQuery,
+        [req.body.beer_name || curVals.beer_name, req.body.brewery || curVals.brewery, req.body.abv || curVals.abv,
+          req.body.ibu || curVals.ibu, req.body.beer_id || curVals.beer_id],
+        (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        getItAll(res);
+      });
+    }
+  });
+});
 
 app.use((req,res) => {
   res.status(404);
@@ -133,5 +129,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(app.get('port'), () => {
-  console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
+  console.log('Express started on http://flip1.engr.oregonstate.edu:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
