@@ -37,10 +37,6 @@ var addSet = (event) => {
    
     var keys = Object.keys(userEntry);
     keys.forEach(e => {
-        // update values to be null if not entered
-        if(userEntry[e] !== null && userEntry[e] === ""){
-            userEntry[e] = null;
-        }
         // empty out the input boxes
         if(e !== "units"){
             document.getElementById(e).value = null;

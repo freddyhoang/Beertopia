@@ -13,7 +13,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // set of strings to place into the app calls below
-var selectTableQuery = "SELECT * FROM Beers";
+var selectTableQuery = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP BY b.beer_id";
     insertRowQuery = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
     selectRowQuery = "SELECT * FROM Beers where beer_id=?";
     deleteRowQuery = "DELETE FROM Beers WHERE beer_id=?";
@@ -99,7 +99,6 @@ app.put('/beers', (req,res,next) => {
       next(err);
       return;
     }
-    console.log(result.length, req.body.beer_id)
     if(result.length == 1){
       var curVals = result[0];
       mysql.pool.query(updateRowQuery,
