@@ -1,4 +1,5 @@
 // large number of modules required
+const { json } = require('body-parser');
 var express = require('express');
     handlebars = require('express-handlebars').create({defaultLayout:'main'});
     app = express();
@@ -13,14 +14,15 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // set of strings to place into the app calls below
-var selectTableQuery = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP BY b.beer_id";
+var selectTableQuery = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id";
     insertRowQuery = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
     selectRowQuery = "SELECT * FROM Beers where beer_id=?";
     deleteRowQuery = "DELETE FROM Beers WHERE beer_id=?";
     updateRowQuery = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
+    selectBeersBrewery = "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery = '?'";
 ;
 
-//nction that retrieves the current SQL info
+//function that retrieves the current SQL info
 var getItAll = (res) => {
   // function that obtains all the rows in the database
   mysql.pool.query(selectTableQuery, (err, rows, fields) => {
@@ -55,6 +57,7 @@ app.get('/beers', (req,res,next) => {
       next(err);
       return;
     }
+      
     res.render('beers');
   });
 });
@@ -78,8 +81,6 @@ app.get('/users', (req,res,next) => {
 app.get('/ratings', (req,res,next) => {
   res.render('ratings');
 });
-
-
 
 // delete a row for Beers
 app.delete('/beers', (req,res,next) => {

@@ -1,17 +1,17 @@
 // once page is loaded, initialize and listen to events
 document.addEventListener("DOMContentLoaded", () => {
     initialize();
-    document.getElementById('Add').addEventListener('click', addSet);
+    document.getElementById('Add').addEventListener('click', addBeer);
     document.getElementById('table-body').addEventListener('click', deleteRow);
     document.getElementById('table-body').addEventListener('click', editRow);
-    document.getElementById('ClearAll').addEventListener('click', clearAll);
+    document.getElementById('breweryDrop').addEventListener('click', breweryChange);
 });
 
 var initialize = () => {
     // perform an impossible deletion that allows for initialization of the page :)
     var req = new XMLHttpRequest();
     // row value
-    var userEntry = {"beer_id": null};
+    var userEntry = {"beer_id": null, "brewery": 'dddd'};
 
     req.open("delete", "/beers", true);
     req.setRequestHeader('Content-Type', 'application/json');
@@ -19,7 +19,7 @@ var initialize = () => {
     req.addEventListener('load', () => {
         if(req.status >= 200 && req.status < 400){
             var response = req.responseText;
-            addRows(response)
+            addRowDropdown(response)
             } else {
             console.log("Error in network request: " + req.statusText);
         }
@@ -27,7 +27,7 @@ var initialize = () => {
     req.send(JSON.stringify(userEntry));
 }
 
-var addSet = (event) => {
+var addBeer = (event) => {
     var req = new XMLHttpRequest();
     var userEntry = {"beer_name": document.getElementById("beer_name").value,
                     "brewery": document.getElementById("brewery").value,
@@ -49,7 +49,7 @@ var addSet = (event) => {
     req.addEventListener('load',() => {
         if(req.status >= 200 && req.status < 400){
             var response = req.responseText;
-            addRows(response)
+            addRowDropdown(response)
             } else {
             console.log("Error in network request: " + req.statusText);
         }
@@ -61,17 +61,18 @@ var addSet = (event) => {
     event.preventDefault();
 };
 
-var addRows = (data) => {
-    // re-add these values each time
+var addRowDropdown = (data) => {
+    // re-add these values each time for the table
     document.getElementById("table-body").innerHTML = null;
 
     // parse data and iterate
     var parsedData = JSON.parse(data);
-
+    var breweries = {};
     parsedData.rows.forEach(e => {
                 
         // update this array on each iteration for the below values
         var oneBeer = [e.beer_name, e.brewery, e.abv, e.ibu, e.avg_rating];
+        breweries[e.brewery]=null;
         
         // create new Rows within the table body
         var newRow = document.createElement("tr");
@@ -113,7 +114,26 @@ var addRows = (data) => {
         };
     });
 
+    // re-add these values to Brewery dropdown
+    document.getElementById("breweryDrop").innerHTML = null;
+    breweries = Object.keys(breweries);
     
+    for(var i = 0; i<breweries.length; i++){
+        // Add option to clear filters
+        if(i==0){
+            var newList = document.createElement("a");
+            newList.classList.add("dropdown-item");
+            newList.innerHTML = 'View All';
+            document.getElementById("breweryDrop").appendChild(newList);
+        }
+        // Add option for each brewery
+        var newList = document.createElement("a");
+        newList.classList.add("dropdown-item");
+        newList.innerHTML = breweries[i];
+        document.getElementById("breweryDrop").appendChild(newList);
+        
+    };
+        
 };
 
 var deleteRow = (event) => {
@@ -129,7 +149,7 @@ var deleteRow = (event) => {
         req.addEventListener('load', () => {
             if(req.status >= 200 && req.status < 400){
                 var response = req.responseText;
-                addRows(response)
+                addRowDropdown(response)
                 } else {
                 console.log("Error in network request: " + req.statusText);
             }
@@ -166,6 +186,7 @@ var editRow = (event) => {
             } else{
                 // just numbers input type
                 newInput.setAttribute("type", "number");
+                newInput.setAttribute("min", 0);
                 if(i==2){
                     newInput.setAttribute("step", 0.01);
                 };
@@ -195,7 +216,7 @@ var editRow = (event) => {
                 req.addEventListener('load',function(){
                     if(req.status >= 200 && req.status < 400){
                         var response = req.responseText;
-                        addRows(response);
+                        addRowDropdown(response);
                         } else {
                         console.log("Error in network request: " + req.statusText);
                     }
@@ -210,13 +231,6 @@ var editRow = (event) => {
     event.preventDefault();
 }
 
-var clearAll = (event) => {
-    // trigger click events on each delete button in the table
-    var rows = document.getElementById("table-body").children;
-
-    for(var i = 0; i<rows.length; i++){
-        rows[i].children[4].children[2].click();
-    }
-
-    event.preventDefault();
+var breweryChange = (event) => {
+    console.log(event.target.innerHTML);
 }
