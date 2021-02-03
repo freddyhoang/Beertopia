@@ -19,8 +19,27 @@ var selectTableQuery = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, 
     selectRowQuery = "SELECT * FROM Beers where beer_id=?";
     deleteRowQuery = "DELETE FROM Beers WHERE beer_id=?";
     updateRowQuery = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
-    selectBeersBrewery = "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery = '?'";
 ;
+
+//function that retrieves the current SQL info
+beersBrews = (req, res) => {
+  var brewery = req.body.brewery;
+  if(brewery === undefined || brewery === 'View All'){
+    selectBeersBrewery =  "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery IS NOT NULL";
+  } else {
+    selectBeersBrewery = "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery = ?";
+    
+  }
+  // function that obtains all the rows in the database
+  mysql.pool.query(selectBeersBrewery, [brewery], (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
+    }
+    // obtain the table data and keep it as a rows variable
+    res.json({rows: rows})
+  });
+};
 
 //function that retrieves the current SQL info
 var getItAll = (res) => {
@@ -39,9 +58,7 @@ var getItAll = (res) => {
 app.post('/beers',(req,res,next) => {
   // all the values from the post request
   var {beer_name, brewery, abv, ibu} = req.body;
-  mysql.pool.query(insertRowQuery, 
-    [beer_name, brewery, abv, ibu], 
-    (err, ret) => {
+  mysql.pool.query(insertRowQuery, [beer_name, brewery, abv, ibu], (err, ret) => {
     if(err){
       next(err);
       return;
@@ -89,7 +106,8 @@ app.delete('/beers', (req,res,next) => {
       next(err);
       return;
     }
-    getItAll(res);
+    
+    beersBrews(req, res);
   });
 });
 
@@ -110,7 +128,7 @@ app.put('/beers', (req,res,next) => {
           next(err);
           return;
         }
-        getItAll(res);
+        beersBrews(req, res);
       });
     }
   });
