@@ -79,26 +79,6 @@ app.get('/beers', (req,res,next) => {
   });
 });
 
-app.get('/', (req,res,next) => {
-  res.render('home');
-});
-
-app.get('/categories', (req,res,next) => {
-  res.render('categories');
-});
-
-app.get('/beer_categories', (req,res,next) => {
-  res.render('beer_categories');
-});
-
-app.get('/users', (req,res,next) => {
-  res.render('users');
-});
-
-app.get('/ratings', (req,res,next) => {
-  res.render('ratings');
-});
-
 // delete a row for Beers
 app.delete('/beers', (req,res,next) => {
   mysql.pool.query(deleteRowQuery, [req.body.beer_id], (err, result) => {
@@ -132,6 +112,26 @@ app.put('/beers', (req,res,next) => {
       });
     }
   });
+});
+
+app.get('/', (req,res,next) => {
+  res.render('home');
+});
+
+app.get('/categories', (req,res,next) => {
+  res.render('categories');
+});
+
+app.get('/beer_categories', (req,res,next) => {
+  res.render('beer_categories');
+});
+
+app.get('/users', (req,res,next) => {
+  res.render('users');
+});
+
+app.get('/ratings', (req,res,next) => {
+  res.render('ratings');
 });
 
 app.use((req,res) => {
