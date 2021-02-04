@@ -113,8 +113,25 @@ app.put('/beers', (req,res,next) => {
   });
 });
 
+<<<<<<< Updated upstream
 app.get('/', (req,res,next) => {
   res.render('home');
+=======
+// add a set to Categories
+app.post('/categories',(req,res,next) => {
+  // all the values from the post request
+  if(req.body.category == ''){
+    return;
+  }
+
+  mysql.pool.query(insertCategory, [req.body.category], (err, ret) => {
+    if(err){
+      next(err);
+      return;
+    }
+    getTable(res, selectCategories);
+  });
+>>>>>>> Stashed changes
 });
 
 app.get('/categories', (req,res,next) => {
