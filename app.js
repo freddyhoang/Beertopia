@@ -12,17 +12,25 @@ app.set('port', 9876);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-// set of strings to place into the app calls below
+// set of queries to place into the app calls below
+// beers Page
 var selectBeers = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id";
     insertBeer = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
-    selectBeerById = "SELECT * FROM Beers where beer_id=?";
+    selectBeerById = "SELECT * FROM Beers WHERE beer_id=?";
     deleteBeer = "DELETE FROM Beers WHERE beer_id=?";
     updateBeer = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
+    // Categories page
     selectCategories = "SELECT * FROM Categories";
     insertCategory = "INSERT INTO Categories (`category_name`) VALUES (?)";
-    selectCategoryById = "SELECT * FROM Categories where category_id=?";
+    selectCategoryById = "SELECT * FROM Categories WHERE category_id=?";
     deleteCategory = "DELETE FROM Categories WHERE category_id=?";
     updateCategory = "UPDATE Categories SET category_name=? WHERE category_id=?";
+    // beer_categories page
+    selectBeerCategories = "SELECT b.beer_name, c.category_name, bc.beer_id, bc.category_id FROM BeerCategories bc JOIN Beers b ON b.beer_id = bc.beer_id JOIN Categories c ON c.category_id = bc.category_id";
+    insertBeerCategory = "INSERT INTO BeerCategories (`category_id`, `beer_id`) VALUES (?, ?)";
+    selectBeerCategoryById = "SELECT * FROM BeerCategories WHERE category_id=? AND beer_id=?";
+    deleteBeerCategory = "DELETE FROM BeerCategories WHERE category_id=? AND beer_id=?";
+    updateBeerCategory = "UPDATE BeerCategories SET category_name=?, beer_name=? WHERE category_id=? AND beer_id=?";
 ;
 
 //function that retrieves current Beer info for a specific brewery
@@ -185,8 +193,39 @@ app.put('/categories', (req,res,next) => {
   });
 });
 
+// add a set to beer_categories
+app.post('/beer_categories',(req,res,next) => {
+  mysql.pool.query(insertBeerCategory, [req.body.category_id, req.body.beer_id], (err, ret) => {
+    if(err){
+      next(err);
+      return;
+    }
+    getTable(res, selectBeerCategories);
+  });
+});
+
+// get all rows in beer_categories
 app.get('/beer_categories', (req,res,next) => {
-  res.render('beer_categories');
+  mysql.pool.query(selectBeerCategories, (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
+    }
+      
+    res.render('beer_categories');
+  });
+});
+
+// delete a row for beer_categories
+app.delete('/beer_categories', (req,res,next) => {
+  mysql.pool.query(deleteBeerCategory, [req.body.category_id, req.body.beer_id], (err, result) => {
+    if(err){
+      next(err);
+      return;
+    }
+    
+    getTable(res, selectBeerCategories);
+  });
 });
 
 app.get('/users', (req,res,next) => {

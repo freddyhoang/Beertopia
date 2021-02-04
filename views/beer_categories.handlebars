@@ -8,6 +8,7 @@
       <h1>Beers placed into Categories</h1>
 
       <hr class='my-4'>
+        Which beer is in which category? 
         Here you'll be able to look at the categories that each beer is placed into. 
       <hr class='my-4'>
 
@@ -18,16 +19,28 @@
       <div class="form-row text-center">
         <div class="col-md-3"></div>
 
-        <div class="form-group col-md-2">
-          <input type="text" class="form-control" name="category" id="category" placeholder="IPA">
-        </div>
 
-        <div class="form-group col-md-2">
-          <input type="text" class="form-control" name="beers" id="beers" placeholder="IPERZ">
+        <div class="col-md-2">
+          <div class="dropdown">
+            <button class="btn btn-info dropdown-toggle" type="button" id="categorydropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Categories
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id='categoryDrop'>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-2">
+          <div class="dropdown">
+            <button class="btn btn-info dropdown-toggle" type="button" id="beerdropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Beers
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id='beerDrop'>
+            </div>
+          </div>
         </div>
 
         
-
         <div class="form-group col-md-1">
           <input type="submit" name="Add" id='Add'>
         </div>
@@ -41,34 +54,22 @@
         
         <thead>
           <tr>
-            <th scope="col">Beer</th>
             <th scope="col">Category</th>
+            <th scope="col">Beer</th>
             <th scope="col"></th>
           </tr>
         </thead>
 
         <tbody id="table-body">
-          <tr>
-            <td scope="col">Bone RPM</td>
-            <td scope="col">IPA</td>
-            <td scope="col"><input class="btn btn-danger" type="submit" value="Delete"></td>
-          </tr>
-          <tr>
-            <td scope="col">Kriek</td>
-            <td scope="col">Sour</td>
-            <td scope="col"><input class="btn btn-danger" type="submit" value="Delete"></td>
-          </tr>
+
         </tbody>
 
       </table>
 
     </div>
 
-    {{!-- a bunch of forms giving additional powers --}}
-    <div class="card-footer text-muted">
-      <input type="submit" class="btn btn-danger" id="ClearAll" name="Clear All" value="Clear All">
-    </div>
-
   </div>
 
 </div>
+
+<script src="/beerCategory.js"></script>
