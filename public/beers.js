@@ -67,12 +67,10 @@ var addRow = (data) => {
 
     // parse data and iterate
     var parsedData = JSON.parse(data);
-    var breweries = {};
     parsedData.rows.forEach(e => {
                 
         // update this array on each iteration for the below values
         var oneBeer = [e.beer_name, e.brewery, e.abv, e.ibu, e.avg_rating];
-        breweries[e.brewery]=null;
         
         // create new Rows within the table body
         var newRow = document.createElement("tr");
@@ -171,8 +169,9 @@ var addRowDropdown = (data) => {
     // re-add these values to Brewery dropdown
     document.getElementById("breweryDrop").innerHTML = null;
     breweries = Object.keys(breweries);
-
-
+    breweries.sort();
+    
+    // invisible option to add values, to refer to value server side
     newInput = document.createElement("option");
     newInput.style.display = "none";
     newInput.id = "breweryName";
@@ -294,7 +293,6 @@ var breweryChange = (event) => {
     // row value
     var userEntry = {"beer_id": null, "brewery": event.target.innerHTML};
     document.getElementById("breweryName").value = event.target.innerHTML;
-    console.log(userEntry.brewery);
 
     req.open("delete", "/beers", true);
     req.setRequestHeader('Content-Type', 'application/json');
@@ -308,6 +306,5 @@ var breweryChange = (event) => {
             console.log("Error in network request: " + req.statusText);
         }
     });
-    console.log(userEntry);
     req.send(JSON.stringify(userEntry));
 }
