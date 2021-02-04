@@ -18,6 +18,11 @@ var selectBeers = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r
     selectBeerById = "SELECT * FROM Beers where beer_id=?";
     deleteBeer = "DELETE FROM Beers WHERE beer_id=?";
     updateBeer = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
+    selectCategories = "SELECT * FROM Categories";
+    insertCategory = "INSERT INTO Categories (`category_name`) VALUES (?)";
+    selectCategoryById = "SELECT * FROM Categories where category_id=?";
+    deleteCategory = "DELETE FROM Categories WHERE category_id=?";
+    updateCategory = "UPDATE Categories SET category_name=? WHERE category_id=?";
 ;
 
 //function that retrieves current Beer info for a specific brewery
@@ -40,10 +45,10 @@ var beersBrews = (req, res) => {
   });
 };
 
-//function that retrieves all Beer info
-var getAllBeers = (res) => {
+//function that gets a Table
+var getTable = (res, query) => {
   // function that obtains all the rows in the database
-  mysql.pool.query(selectBeers, (err, rows, fields) => {
+  mysql.pool.query(query, (err, rows, fields) => {
     if(err){
       next(err);
       return;
@@ -53,7 +58,12 @@ var getAllBeers = (res) => {
   });
 };
 
-// add a set to the Beers
+// home
+app.get('/', (req,res,next) => {
+  res.render('home');
+});
+
+// add a set to Beers
 app.post('/beers',(req,res,next) => {
   // all the values from the post request
   var {beer_name, brewery, abv, ibu} = req.body;
@@ -62,7 +72,7 @@ app.post('/beers',(req,res,next) => {
       next(err);
       return;
     }
-    getAllBeers(res);
+    getTable(res, selectBeers);
   });
 });
 
@@ -107,18 +117,68 @@ app.put('/beers', (req,res,next) => {
           next(err);
           return;
         }
-        getAllBeers(res);
+        getTable(res, selectBeers);
       });
     }
   });
 });
 
-app.get('/', (req,res,next) => {
-  res.render('home');
+// add a set to Categories
+app.post('/categories',(req,res,next) => {
+  // all the values from the post request
+  mysql.pool.query(insertCategory, [req.body.category], (err, ret) => {
+    if(err){
+      next(err);
+      return;
+    }
+    getTable(res, selectCategories);
+  });
 });
 
+// get all rows in Categories
 app.get('/categories', (req,res,next) => {
-  res.render('categories');
+  mysql.pool.query(selectCategories, (err, rows, fields) => {
+    if(err){
+      next(err);
+      return;
+    }
+      
+    res.render('categories');
+  });
+});
+
+// delete a row for Categories
+app.delete('/categories', (req,res,next) => {
+  mysql.pool.query(deleteCategory, [req.body.category_id], (err, result) => {
+    if(err){
+      next(err);
+      return;
+    }
+    
+    getTable(res, selectCategories);
+  });
+});
+
+// update one row for Categories
+app.put('/categories', (req,res,next) => {
+  mysql.pool.query(selectCategoryById, [req.body.category_id], (err, result) => {
+    if(err){
+      next(err);
+      return;
+    }
+    if(result.length == 1){
+      var curVals = result[0];
+      mysql.pool.query(updateCategory,
+        [req.body.category_name || curVals.category_name, req.body.category_id || curVals.category_id],
+        (err, result) => {
+        if(err){
+          next(err);
+          return;
+        }
+        getTable(res, selectCategories);
+      });
+    }
+  });
 });
 
 app.get('/beer_categories', (req,res,next) => {
