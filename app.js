@@ -1,5 +1,4 @@
 // large number of modules required
-const { json } = require('body-parser');
 var express = require('express');
     handlebars = require('express-handlebars').create({defaultLayout:'main'});
     app = express();
@@ -14,24 +13,24 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 // set of strings to place into the app calls below
-var selectTableQuery = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id";
-    insertRowQuery = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
-    selectRowQuery = "SELECT * FROM Beers where beer_id=?";
-    deleteRowQuery = "DELETE FROM Beers WHERE beer_id=?";
-    updateRowQuery = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
+var selectBeers = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id";
+    insertBeer = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
+    selectBeerById = "SELECT * FROM Beers where beer_id=?";
+    deleteBeer = "DELETE FROM Beers WHERE beer_id=?";
+    updateBeer = "UPDATE Beers SET beer_name=?, brewery=?, abv=?, ibu=? WHERE beer_id=?";
 ;
 
-//function that retrieves the current SQL info
-beersBrews = (req, res) => {
+//function that retrieves current Beer info for a specific brewery
+var beersBrews = (req, res) => {
   var brewery = req.body.brewery;
   if(brewery === undefined || brewery === 'View All'){
-    selectBeersBrewery =  "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery IS NOT NULL";
+    selectBeersByBrewery =  "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery IS NOT NULL";
   } else {
-    selectBeersBrewery = "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery = ?";
+    selectBeersByBrewery = "SELECT * FROM (SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id) as f WHERE f.brewery = ?";
     
   }
   // function that obtains all the rows in the database
-  mysql.pool.query(selectBeersBrewery, [brewery], (err, rows, fields) => {
+  mysql.pool.query(selectBeersByBrewery, [brewery], (err, rows, fields) => {
     if(err){
       next(err);
       return;
@@ -41,10 +40,10 @@ beersBrews = (req, res) => {
   });
 };
 
-//function that retrieves the current SQL info
-var getItAll = (res) => {
+//function that retrieves all Beer info
+var getAllBeers = (res) => {
   // function that obtains all the rows in the database
-  mysql.pool.query(selectTableQuery, (err, rows, fields) => {
+  mysql.pool.query(selectBeers, (err, rows, fields) => {
     if(err){
       next(err);
       return;
@@ -58,18 +57,18 @@ var getItAll = (res) => {
 app.post('/beers',(req,res,next) => {
   // all the values from the post request
   var {beer_name, brewery, abv, ibu} = req.body;
-  mysql.pool.query(insertRowQuery, [beer_name, brewery, abv, ibu], (err, ret) => {
+  mysql.pool.query(insertBeer, [beer_name, brewery, abv, ibu], (err, ret) => {
     if(err){
       next(err);
       return;
     }
-    getItAll(res);
+    getAllBeers(res);
   });
 });
 
 // get all rows in Beers
 app.get('/beers', (req,res,next) => {
-  mysql.pool.query(selectTableQuery, (err, rows, fields) => {
+  mysql.pool.query(selectBeers, (err, rows, fields) => {
     if(err){
       next(err);
       return;
@@ -81,7 +80,7 @@ app.get('/beers', (req,res,next) => {
 
 // delete a row for Beers
 app.delete('/beers', (req,res,next) => {
-  mysql.pool.query(deleteRowQuery, [req.body.beer_id], (err, result) => {
+  mysql.pool.query(deleteBeer, [req.body.beer_id], (err, result) => {
     if(err){
       next(err);
       return;
@@ -93,14 +92,14 @@ app.delete('/beers', (req,res,next) => {
 
 // update one row for Beers
 app.put('/beers', (req,res,next) => {
-  mysql.pool.query(selectRowQuery, [req.body.beer_id], (err, result) => {
+  mysql.pool.query(selectBeerById, [req.body.beer_id], (err, result) => {
     if(err){
       next(err);
       return;
     }
     if(result.length == 1){
       var curVals = result[0];
-      mysql.pool.query(updateRowQuery,
+      mysql.pool.query(updateBeer,
         [req.body.beer_name || curVals.beer_name, req.body.brewery || curVals.brewery, req.body.abv || curVals.abv,
           req.body.ibu || curVals.ibu, req.body.beer_id || curVals.beer_id],
         (err, result) => {
@@ -108,7 +107,7 @@ app.put('/beers', (req,res,next) => {
           next(err);
           return;
         }
-        beersBrews(req, res);
+        getAllBeers(res);
       });
     }
   });
