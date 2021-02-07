@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeDropdowns('beer', '/beers');
     document.getElementById('Add').addEventListener('click', addBeerCategory);
     document.getElementById('table-body').addEventListener('click', deleteRow);
-    document.getElementById('table-body').addEventListener('click', editRow);
     document.getElementById('beerDrop').addEventListener('click', change);
     document.getElementById('categoryDrop').addEventListener('click', change);
 });
