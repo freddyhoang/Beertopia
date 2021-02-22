@@ -3,14 +3,15 @@ var express = require('express');
     handlebars = require('express-handlebars').create({defaultLayout:'main'});
     app = express();
     mysql = require('./dbcon.js');
-    bodyParser = require("body-parser");
-;
+    bodyParser = require("body-parser"); 
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 9876);
+app.set('port', 5555);
 app.use(express.static('public'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
 
 // set of queries to place into the app calls below
 // beers Page
@@ -228,12 +229,84 @@ app.delete('/beer_categories', (req,res,next) => {
   });
 });
 
+
+// ------- SAVANNA START HERE -------- //
+
+function getUsers(res, mysql, context, complete){
+  mysql.pool.query("SELECT username, first_name FROM Users", function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.users = results;
+      complete();
+  });
+}
+
+// -------- DISPLAY ALL USERS -------- //
+
 app.get('/users', (req,res,next) => {
-  res.render('users');
+  let callbackCount = 0;
+  let context = {};
+  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
+  //var mysql = req.app.get('mysql');
+
+  getUsers(res, mysql, context, complete);
+  //getPlanets(res, mysql, context, complete);
+  function complete(){
+      callbackCount++;
+      if(callbackCount >= 1){
+          res.render('users', context);
+      }
+  }  
 });
 
+// -------- ADD A NEW USER -------- //
+
+app.post('/users', function(req, res){
+  console.log(req.body)
+
+  let sql = "INSERT INTO Users (`username`, `email`, `gender`, `first_name`, `last_name`, `date_of_birth`, `zipcode`) VALUES (?,?,?,?,?,?,?)";
+  let inserts = [req.body.username, req.body.email, req.body.gender, req.body.fname, req.body.lname, req.body.dob, req.body.zip];
+  
+  sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+      if(error){
+          console.log(JSON.stringify(error))
+          res.write(JSON.stringify(error));
+          res.end();
+      }else{
+          console.log(results)
+          res.redirect('/users');
+      }
+  });
+});
+
+function getTopRatings(res, mysql, context, complete){
+  let sql = "SELECT Beers.beer_id, Beers.beer_name, Averages.average_stars FROM Ratings INNER JOIN Beers ON Ratings.beer_id = Beers.beer_id INNER JOIN (SELECT beer_id, AVG(rating_value) AS average_stars FROM Ratings GROUP BY beer_id) AS Averages ON Averages.beer_id = Beers.beer_id ORDER BY average_stars DESC;";
+  mysql.pool.query(sql, function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.topratings = results;
+      complete();
+  });
+}
+
 app.get('/ratings', (req,res,next) => {
-  res.render('ratings');
+  let callbackCount = 0;
+  let context = {};
+  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
+  //var mysql = req.app.get('mysql');
+
+  getTopRatings(res, mysql, context, complete);
+  //getPlanets(res, mysql, context, complete);
+  function complete(){
+      callbackCount++;
+      if(callbackCount >= 1){
+          res.render('ratings', context);
+      }
+  }
 });
 
 app.use((req,res) => {
