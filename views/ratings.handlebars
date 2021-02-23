@@ -6,30 +6,56 @@
     {{!-- card header, contains all the forms to create Sets --}}
     <div class="card-header">
       <h1>Beer Ratings</h1>
-
       <hr class='my-4'>
         Delicious? Awful? Give it a rating!
       <hr class='my-4'>
-      
-      {{!-- input forms --}}
-      <div class="form-row text-center">
-        <div class="col"></div>
-        <div class="form-outline col">
-          <input type="search" id="beer-search" class="form-control" placeholder="Search for a beer..." aria-label="Search" />
-        </div>
-        <div class="col"></div>
-      </div>
-      <br>
-      <div class="form-row text-center">
-        <div class="col"></div>
-        <div class="form-group col">
-          <p>Results from the search will populate here.</p>
-        </div>
-        <div class="col"></div>
-  	  </div>
     </div>
 
+    {{!-- input forms --}}
+    <div class="col-md-10 mx-auto">
+      <form action="/ratings" method="POST">
+        <select class="selectpicker" data-live-search="true" onchange="javascript:this.form.submit()" name="beer_id">
+          {{#each beers}}
+            <option data-tokens="{{this.beer_name}}" value="{{this.beer_id}}">{{this.beer_name}}</option>
+          {{/each}}
+        </select>
+      </form>
+    </div>
+
+    <br>
+
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th scope="col mx-auto">Beer</th>
+          <th scope="col mx-auto">Rating</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#each abeer}}
+        <tr>
+          <td scope="col">{{this.beer_name}}</td>
+          <td scope="col">
+            <div class="rating"> 
+              <input type="radio" name="rating2" value="5" id="5"><label for="5">☆</label>
+              <input type="radio" name="rating2" value="4" id="4"><label for="4">☆</label>
+              <input type="radio" name="rating2" value="3" id="3"><label for="3">☆</label>
+              <input type="radio" name="rating2" value="2" id="2"><label for="2">☆</label>
+              <input type="radio" name="rating2" value="1" id="1"><label for="1">☆</label>
+            </div>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  
+
     <div class="card-body">
+      <div class="row justify-content-center">
+        <h3>Top Rated:</h3>
+        </div>
+      </div>
       {{!-- contains the tables top rows --}}
       <table class="table table-sm table-hover">
         <thead>
