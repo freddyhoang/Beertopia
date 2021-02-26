@@ -73,7 +73,7 @@ li {
 .rating>label {
     position: relative;
     width: 1em;
-    font-size: 1em;
+    font-size: 2em;
     color: #FFD600;
     cursor: pointer;
 }
