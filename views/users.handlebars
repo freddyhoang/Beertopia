@@ -11,61 +11,60 @@
     
       
       {{!-- input forms --}}
-      <div class="form-row text-left">
-        <div class="form-group col-md-6">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" name="username" id="username" placeholder="Ringbearer">
+      <form id="adduser" action="/users" method="POST">
+        <div class="form-row text-left">
+          <div class="form-group col-md-6">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" id="username" placeholder="Ringbearer">
+          </div>
+
+          <div class="form-group col-md-6">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" name="email" id="email" placeholder="bagend@theshire.com">
+          </div>
         </div>
 
-        <div class="form-group col-md-6">
-          <label for="email">Email</label>
-          <input type="text" class="form-control" name="email" id="email" placeholder="bagend@theshire.com">
-        </div>
-      </div>
+        <div class="form-row text-left">
+          <div class="form-group col-md-6">
+            <label for="fname">First Name</label>
+            <input type="text" class="form-control" name="fname" id="fname" placeholder="Frodo">
+          </div>
 
-      <div class="form-row text-left">
-        <div class="form-group col-md-6">
-          <label for="fname">First Name</label>
-          <input type="text" class="form-control" name="fname" id="fname" placeholder="Frodo">
-        </div>
+          <div class="form-group col-md-6">
+            <label for="lname">Last Name</label>
+            <input type="text" class="form-control" name="lname" id="lname" placeholder="Baggins">
+          </div>
+        </div>  
 
-        <div class="form-group col-md-6">
-          <label for="lname">Last Name</label>
-          <input type="text" class="form-control" name="lname" id="lname" placeholder="Baggins">
-        </div>
-      </div>  
+        <div class="form-row text-left">
+          <div class="form-group col-md-3">
+            <label for="dob">Birthday</label>
+            <input type="date" class="form-control" name="dob" id="dob" placeholder="7/29/43">
+          </div>
 
-      <div class="form-row text-left">
-        <div class="form-group col-md-3">
-          <label for="dob">Birthday</label>
-          <input type="date" class="form-control" name="dob" id="dob" placeholder="7/29/43">
-        </div>
+          <div class="form-group col-md-3">
+            <label for="zip">Zipcode</label>
+            <input type="number" class="form-control" name="zip" id="zip" placeholder="97214">
+          </div>
 
-        <div class="form-group col-md-3">
-          <label for="zip">Zipcode</label>
-          <input type="number" class="form-control" name="zip" id="zip" placeholder="97214">
-        </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="gender_m" value="male">
+            <label class="form-check-label" for="gender_m">Male</label>
+          </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="gender" id="gender_m" value="male">
-          <label class="form-check-label" for="gender_m">Male</label>
-        </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="gender_f" value="female">
+            <label class="form-check-label" for="gender_f">Female</label>
+          </div>
 
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="gender" id="gender_f" value="female">
-          <label class="form-check-label" for="gender_f">Female</label>
+          <div class="form-group col-md-3">
+            <input type="submit" class="btn btn-info" value="Create Profile">
+          </div>
         </div>
-      </div>
-
-      <div class="form-row">
-        <div class="col-md-5"></div>
-        <div class="form-group col-md-1">
-          <input type="submit" class="btn btn-info" name="add_user" id='add_user' value="Create Profile">
-        </div>
-        <div class="col-md-5"></div>
-      </div>
-
+      </form>  
+    
     </div>
+
 
     <div class="card-body">
     
@@ -79,20 +78,15 @@
           </tr>
         </thead>
 
-        <tbody id="table-body">
+        <tbody>
+          {{#each users}}
           <tr>
-            <td scope="col">blueberry_soup</td>
-            <td scope="col">Savanna</td>
+            <td scope="col">{{this.username}}</td>
+            <td scope="col">{{this.first_name}}</td>
           </tr>
-          <tr>
-            <td scope="col">mithrandir25</td>
-            <td scope="col">Gandalf</td>
-          </tr>
-          <tr>
-            <td scope="col">beer_and_coding</td>
-            <td scope="col">Freddy</td>
-          </tr>
+          {{/each}}
         </tbody>
+
       </table>
 
     </div>

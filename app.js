@@ -3,14 +3,15 @@ var express = require('express');
     handlebars = require('express-handlebars').create({defaultLayout:'main'});
     app = express();
     mysql = require('./dbcon.js');
-    bodyParser = require("body-parser");
-;
+    bodyParser = require("body-parser"); 
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 9876);
+app.set('port', 5555);
 app.use(express.static('public'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
 
 // set of queries to place into the app calls below
 // beers Page
@@ -228,13 +229,179 @@ app.delete('/beer_categories', (req,res,next) => {
   });
 });
 
+
+// ------- FUNCTION TO GET ALL USERS -------- //
+
+function getUsers(res, mysql, context, complete){
+  mysql.pool.query("SELECT `first_name`, `username` FROM Users", function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.users = results;
+      complete();
+  });
+}
+
+// -------- DISPLAY ALL USERS -------- //
+
 app.get('/users', (req,res,next) => {
-  res.render('users');
+  let callbackCount = 0;
+  let context = {};
+  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
+  //var mysql = req.app.get('mysql');
+
+  getUsers(res, mysql, context, complete);
+  //getPlanets(res, mysql, context, complete);
+  function complete(){
+      callbackCount++;
+      if(callbackCount >= 1){
+          console.log(context)
+          res.render('users', context);
+      }
+  }  
 });
 
-app.get('/ratings', (req,res,next) => {
-  res.render('ratings');
+// -------- ADD A NEW USER -------- //
+
+app.post('/users', function(req, res){
+  console.log(req.body)
+
+  let sql = "INSERT INTO Users (`username`, `email`, `gender`, `first_name`, `last_name`, `date_of_birth`, `zipcode`) VALUES (?,?,?,?,?,?,?)";
+  let inserts = [req.body.username, req.body.email, req.body.gender, req.body.fname, req.body.lname, req.body.dob, req.body.zip];
+  
+  sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+      if(error){
+          console.log(JSON.stringify(error))
+          res.write(JSON.stringify(error));
+          res.end();
+      }else{
+          console.log(results)
+          res.redirect('/users');
+      }
+  });
 });
+
+// -------- FUNCTION TO GET THE TOP AVERAGE RATINGS FOR BEERS -------- //
+
+function getTopRatings(res, mysql, context, complete){
+  let sql = "SELECT Beers.beer_id, Beers.beer_name, Averages.average_stars FROM Ratings INNER JOIN Beers ON Ratings.beer_id = Beers.beer_id INNER JOIN (SELECT beer_id, AVG(rating_value) AS average_stars FROM Ratings GROUP BY beer_id) AS Averages ON Averages.beer_id = Beers.beer_id ORDER BY average_stars DESC LIMIT 10;";
+  mysql.pool.query(sql, function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.topratings = results;
+      complete();
+  });
+}
+
+// -------- FUNCTION TO GET ALL BEERS FOR DROPDOWN-------- //
+
+function getBeers(res, mysql, context, complete){
+  let sql = "SELECT beer_id, beer_name FROM Beers";
+  mysql.pool.query(sql, function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.beers = results;
+      complete();
+  });
+}
+
+// -------- FUNCTION TO GET ALL USERS FOR DROPDOWN-------- //
+
+function getUserDropdown(res, mysql, context, complete){
+  let sql = "SELECT user_id, username FROM Users";
+  mysql.pool.query(sql, function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.users = results;
+      complete();
+  });
+}
+
+// -------- FUNCTION TO A SINGLE BEER TO BE RATED -------- //
+
+function getABeer(res, mysql, context, id, complete){
+  var inserts = id;
+  mysql.pool.query(selectBeerById, inserts, function(error, results, fields){
+      if(error){
+          res.write(JSON.stringify(error));
+          res.end();
+      }
+      context.abeer = results;
+      complete();
+  });
+}
+
+// -------- DISPLAY THE TOP RATED BEERS & SELECTED BEER -------- //
+
+app.get('/ratings', (req,res,next) => {
+  let callbackCount = 0;
+  let context = {};
+  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
+  //var mysql = req.app.get('mysql');
+  getTopRatings(res, mysql, context, complete);
+  getBeers(res, mysql, context, complete);
+  getUserDropdown(res, mysql, context, complete)
+  function complete(){
+      callbackCount++;
+      if(callbackCount >= 3){
+          res.render('ratings', context);
+      }
+  }
+});
+
+// -------- ADD A NEW RATING -------- //
+
+app.post('/ratings', function(req, res){
+  console.log(req.body)
+
+  let sql = "INSERT INTO Ratings (`rating_value`, `user_id`, `beer_id`) VALUES (?, ?, ?)";
+  let inserts = [req.body.rating2, req.body.user_id, req.body.beer_id];
+  
+  sql = mysql.pool.query(sql,inserts,function(error, results, fields){
+      if(error){
+          console.log(JSON.stringify(error))
+          res.write(JSON.stringify(error));
+          res.end();
+      }else{
+          console.log(results)
+          res.redirect('/ratings');
+      }
+  });
+});
+
+// app.post('/ratings', function(req, res){
+//   let callbackCount = 0;
+//   let context = {};
+//   getABeer(res, mysql, context, req.body.beer_id, complete);
+//   getTopRatings(res, mysql, context, complete);
+//   getBeers(res, mysql, context, complete);
+//   function complete(){
+//     callbackCount++;
+//     if(callbackCount >= 3){
+//         res.render('ratings', context);
+//     }
+//   }
+  //console.log(req.body)
+  // let context = {}
+  // sql = mysql.pool.query(selectBeerById,req.body.beer_id,function(error, results, fields){
+  //     if(error){
+  //         console.log(JSON.stringify(error))
+  //         res.write(JSON.stringify(error));
+  //         res.end();
+  //     }else{
+  //         //console.log(results)
+  //         context.abeer = results;
+  //         res.redirect('/ratings');
+  //     }
+  // });
+
 
 app.use((req,res) => {
   res.status(404);
