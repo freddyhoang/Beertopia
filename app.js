@@ -7,7 +7,7 @@ var express = require('express');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 5555);
+app.set('port', 5550);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -233,7 +233,7 @@ app.delete('/beer_categories', (req,res,next) => {
 // ------- FUNCTION TO GET ALL USERS -------- //
 
 function getUsers(res, mysql, context, complete){
-  mysql.pool.query("SELECT `first_name`, `username` FROM Users", function(error, results, fields){
+  mysql.pool.query("SELECT `first_name`, `username`, `user_id` FROM Users", function(error, results, fields){
       if(error){
           res.write(JSON.stringify(error));
           res.end();
@@ -248,15 +248,13 @@ function getUsers(res, mysql, context, complete){
 app.get('/users', (req,res,next) => {
   let callbackCount = 0;
   let context = {};
-  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
-  //var mysql = req.app.get('mysql');
-
+  context.jsscripts = "deleteUser.js";
   getUsers(res, mysql, context, complete);
   //getPlanets(res, mysql, context, complete);
   function complete(){
       callbackCount++;
       if(callbackCount >= 1){
-          console.log(context)
+          // console.log(context)
           res.render('users', context);
       }
   }  
@@ -282,10 +280,29 @@ app.post('/users', function(req, res){
   });
 });
 
+// -------- DELETE A USER -------- //
+
+
+app.delete('/users/:id', function(req, res){
+  var sql = "DELETE FROM Users WHERE user_id = ?";
+  var inserts = [req.params.id];
+  mysql.pool.query(sql, inserts, function(error, results, fields){
+      if(error){
+          console.log(error)
+          res.write(JSON.stringify(error));
+          res.status(400);
+          res.end();
+      }else{
+          res.status(202).end();
+      }
+  })
+})
+
+
 // -------- FUNCTION TO GET THE TOP AVERAGE RATINGS FOR BEERS -------- //
 
 function getTopRatings(res, mysql, context, complete){
-  let sql = "SELECT Beers.beer_id, Beers.beer_name, Averages.average_stars FROM Ratings INNER JOIN Beers ON Ratings.beer_id = Beers.beer_id INNER JOIN (SELECT beer_id, AVG(rating_value) AS average_stars FROM Ratings GROUP BY beer_id) AS Averages ON Averages.beer_id = Beers.beer_id ORDER BY average_stars DESC LIMIT 10;";
+  let sql = "SELECT b.beer_id, b.beer_name, AVG(r.rating_value) AS average_stars FROM Beers b INNER JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id ORDER BY average_stars DESC LIMIT 10";
   mysql.pool.query(sql, function(error, results, fields){
       if(error){
           res.write(JSON.stringify(error));
