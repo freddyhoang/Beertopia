@@ -75,15 +75,16 @@
           <tr>
             <th scope="col">Username</th>
             <th scope="col">Name</th>
+            <th scope="col"></th>
           </tr>
         </thead>
 
-        <tbody>
+        <tbody id="user-table">
           {{#each users}}
           <tr>
             <td scope="col">{{this.username}}</td>
             <td scope="col">{{this.first_name}}</td>
-            <td scope="col"><button onclick="deleteUser({{this.user_id}})">Delete</button></td>
+            <td scope="col"><button class="btn btn-danger" onclick="deleteUser({{this.user_id}})">Delete</button></td>
           </tr>
           {{/each}}
         </tbody>

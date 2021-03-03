@@ -11,6 +11,9 @@ app.set('port', 5550);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+app.use('/static', express.static('public'));
+app.use('/', express.static('public'));
+
 
 
 // set of queries to place into the app calls below
@@ -286,6 +289,7 @@ app.post('/users', function(req, res){
 app.delete('/users/:id', function(req, res){
   var sql = "DELETE FROM Users WHERE user_id = ?";
   var inserts = [req.params.id];
+  // console.log("id to delete: " + inserts);
   mysql.pool.query(sql, inserts, function(error, results, fields){
       if(error){
           console.log(error)
