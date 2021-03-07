@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('table-body').addEventListener('click', deleteRow);
     document.getElementById('beerDrop').addEventListener('click', change);
     document.getElementById('categoryDrop').addEventListener('click', change);
+    document.getElementById('alert-time').addEventListener('click', removeAlert);
 });
 
 var initialize = () => {
@@ -71,6 +72,7 @@ var addBeerCategory = (event) => {
             addRow(response)
             } else {
             console.log("Error in network request: " + req.statusText);
+            alert();
         }
     });
     
@@ -78,6 +80,7 @@ var addBeerCategory = (event) => {
 
     // prevent page from reloading
     event.preventDefault();
+    removeAlert();
 };
 
 var addDropdown = (data, item) => {
@@ -195,4 +198,20 @@ var change = (event) => {
         document.getElementById("beerName").value = event.target.value;
         document.getElementById("beerdropdown").innerHTML = event.target.innerHTML;
     }
+}
+
+var alert = () => {
+    var newAlert = document.createElement('div');
+    var alertArea = document.getElementById('alert-time');
+    alertArea.innerHTML = '';
+
+    newAlert.innerHTML = "You tried to add in an already existing beer + categories relationship.";
+    newAlert.classList = 'alert alert-danger alert-dismissible fade show';
+    newAlert.role = 'alert';
+
+    alertArea.append(newAlert);
+}
+
+var removeAlert = (event) => {
+    document.getElementById('alert-time').innerHTML = '';
 }

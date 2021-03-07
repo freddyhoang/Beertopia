@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('Add').addEventListener('click', addCategory);
     document.getElementById('table-body').addEventListener('click', deleteRow);
     document.getElementById('table-body').addEventListener('click', editRow);
+    document.getElementById('alert-time').addEventListener('click', removeAlert);
 });
 
 var initialize = () => {
@@ -47,13 +48,15 @@ var addCategory = (event) => {
         if(req.status >= 200 && req.status < 400){
             var response = req.responseText;
             addRow(response)
-            } else {
-            console.log("Error in network request: " + req.statusText);
+        } else {
+        alert();
+        console.log("Error in network request: " + req.statusText);    
         }
     });
     
     req.send(JSON.stringify(userEntry));
 
+    removeAlert();
     // prevent page from reloading
     event.preventDefault();
 };
@@ -183,6 +186,7 @@ var editRow = (event) => {
                         var response = req.responseText;
                         addRow(response);
                         } else {
+                        alert();
                         console.log("Error in network request: " + req.statusText);
                     }
                 });
@@ -191,4 +195,20 @@ var editRow = (event) => {
         });
     }
     event.preventDefault();
+}
+
+var alert = (event) => {
+    var newAlert = document.createElement('div');
+    var alertArea = document.getElementById('alert-time');
+    alertArea.innerHTML = '';
+
+    newAlert.innerHTML = "This category already exists! Cannot add an already existing category.";
+    newAlert.classList = 'alert alert-danger alert-dismissible fade show';
+    newAlert.role = 'alert';
+
+    alertArea.append(newAlert);
+}
+
+var removeAlert = (event) => {
+    document.getElementById('alert-time').innerHTML = '';
 }

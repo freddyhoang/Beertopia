@@ -325,7 +325,6 @@ var alert = (event) => {
     newAlert.innerHTML = "You didn't mention a beer or a brewery. Please try again.";
     newAlert.classList = 'alert alert-danger alert-dismissible fade show';
     newAlert.role = 'alert';
-    var closeButton = document.createElement('button');
 
     alertArea.append(newAlert);
 }
