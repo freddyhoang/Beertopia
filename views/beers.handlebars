@@ -10,17 +10,21 @@
       Want to add in a beer to help us track it?
       <hr class='my-4'>
 
+      {{!-- alert message for when the minimum isn't entered --}}
+      <div id="alert-time" role="alert">
+      </div>
+
       {{!-- input forms --}}
       <div class="form-row text-center">
         <div class= "form-group col-md-2"></div>
         <div class="form-group col-md-2">
           <label>Beer:</label>
-          <input type="text" class="form-control" name="beer_name" id="beer_name" placeholder="Lip Puckerer">
+          <input type="text" class="form-control" name="beer_name" id="beer_name" placeholder="Lip Puckerer" required>
         </div>
 
         <div class="form-group col-md-1">
           <label>Brewery:</label>
-          <input type="text" class="form-control" name="brewery" id="brewery" placeholder="Pfriem">
+          <input type="text" class="form-control" name="brewery" id="brewery" placeholder="Pfriem" required>
         </div>
 
         <div class="form-group col-md-2">

@@ -7,7 +7,7 @@ var express = require('express');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
-app.set('port', 5550);
+app.set('port', 5555);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -16,7 +16,7 @@ app.use('/', express.static('public'));
 
 
 
-// set of queries to place into the app calls below
+// set of SQL queries to place into the app calls below
 // beers Page
 var selectBeers = "SELECT b.beer_id, b.beer_name, b.brewery, b.abv, b.ibu, AVG(r.rating_value) AS avg_rating FROM Beers b LEFT JOIN Ratings r ON b.beer_id = r.beer_id GROUP by b.beer_id";
     insertBeer = "INSERT INTO Beers (`beer_name`, `brewery`, `abv`, `ibu`) VALUES (?, ?, ?, ?)";
@@ -277,7 +277,7 @@ app.post('/users', function(req, res){
           res.write(JSON.stringify(error));
           res.end();
       }else{
-          console.log(results)
+          // console.log(results)
           res.redirect('/users');
       }
   });
@@ -391,38 +391,11 @@ app.post('/ratings', function(req, res){
           res.write(JSON.stringify(error));
           res.end();
       }else{
-          console.log(results)
+          // console.log(results)
           res.redirect('/ratings');
       }
   });
 });
-
-// app.post('/ratings', function(req, res){
-//   let callbackCount = 0;
-//   let context = {};
-//   getABeer(res, mysql, context, req.body.beer_id, complete);
-//   getTopRatings(res, mysql, context, complete);
-//   getBeers(res, mysql, context, complete);
-//   function complete(){
-//     callbackCount++;
-//     if(callbackCount >= 3){
-//         res.render('ratings', context);
-//     }
-//   }
-  //console.log(req.body)
-  // let context = {}
-  // sql = mysql.pool.query(selectBeerById,req.body.beer_id,function(error, results, fields){
-  //     if(error){
-  //         console.log(JSON.stringify(error))
-  //         res.write(JSON.stringify(error));
-  //         res.end();
-  //     }else{
-  //         //console.log(results)
-  //         context.abeer = results;
-  //         res.redirect('/ratings');
-  //     }
-  // });
-
 
 app.use((req,res) => {
   res.status(404);

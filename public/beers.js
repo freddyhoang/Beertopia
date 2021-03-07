@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('table-body').addEventListener('click', deleteRow);
     document.getElementById('table-body').addEventListener('click', editRow);
     document.getElementById('breweryDrop').addEventListener('click', breweryChange);
+    document.getElementById('alert-time').addEventListener('click', removeAlert);
 });
 
 var initialize = () => {
@@ -34,8 +35,15 @@ var addBeer = (event) => {
                     "brewery": document.getElementById("brewery").value,
                     "abv": document.getElementById("abv").value,
                     "ibu": document.getElementById("ibu").value};
+    ;
 
-   
+    // don't allow empty beer names and breweries to be added
+    if(userEntry.beer_name == "" || userEntry.brewery == ""){
+        alert();
+        return
+    }
+
+
     var keys = Object.keys(userEntry);
     keys.forEach(e => {
         // empty out the input boxes
@@ -57,7 +65,7 @@ var addBeer = (event) => {
     });
     
     req.send(JSON.stringify(userEntry));
-
+    removeAlert();
     // prevent page from reloading
     event.preventDefault();
 };
@@ -307,4 +315,21 @@ var breweryChange = (event) => {
         }
     });
     req.send(JSON.stringify(userEntry));
+}
+
+var alert = (event) => {
+    var newAlert = document.createElement('div');
+    var alertArea = document.getElementById('alert-time');
+    alertArea.innerHTML = '';
+
+    newAlert.innerHTML = "You didn't mention a beer or a brewery. Please try again.";
+    newAlert.classList = 'alert alert-danger alert-dismissible fade show';
+    newAlert.role = 'alert';
+    var closeButton = document.createElement('button');
+
+    alertArea.append(newAlert);
+}
+
+var removeAlert = (event) => {
+    document.getElementById('alert-time').innerHTML = '';
 }
