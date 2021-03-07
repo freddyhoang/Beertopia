@@ -9,7 +9,11 @@
         Create a user profile for yourself so you can save your ratings!
       <hr class="my-4">
     
-      
+      {{!-- alert message for when the minimum isn't entered --}}
+      <div id="alert-time" class = "alert alert-danger alert-dismissible fade show" role="alert">
+        {{alert}}
+      </div>
+
       {{!-- input forms --}}
       <form id="adduser" action="/users" method="POST">
         <div class="form-row text-left">
@@ -98,3 +102,4 @@
 </div>
 
 <script src="/deleteUser.js"></script>
+{{!-- <script src="/users.js"></script> --}}
