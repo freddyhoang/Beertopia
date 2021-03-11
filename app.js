@@ -282,7 +282,6 @@ app.post('/users', function(req, res){
   
   sql = mysql.pool.query(sql,inserts,function(error, results, fields){
       if(error){
-          console.log(JSON.stringify(error));
           context.alert = 'This username or email address has already been used!';
           res.render('users', context);
           // res.write(JSON.stringify(error));
@@ -303,7 +302,6 @@ app.delete('/users/:id', function(req, res){
   // console.log("id to delete: " + inserts);
   mysql.pool.query(sql, inserts, function(error, results, fields){
       if(error){
-          console.log(error)
           res.write(JSON.stringify(error));
           res.status(400);
           res.end();
@@ -375,8 +373,6 @@ function getABeer(res, mysql, context, id, complete){
 app.get('/ratings', (req,res,next) => {
   let callbackCount = 0;
   let context = {};
-  //context.jsscripts = ["deleteperson.js","filterpeople.js","searchpeople.js"];
-  //var mysql = req.app.get('mysql');
   getTopRatings(res, mysql, context, complete);
   getBeers(res, mysql, context, complete);
   getUserDropdown(res, mysql, context, complete)
@@ -391,18 +387,15 @@ app.get('/ratings', (req,res,next) => {
 // -------- ADD A NEW RATING -------- //
 
 app.post('/ratings', function(req, res){
-  console.log(req.body)
 
   let sql = "INSERT INTO Ratings (`rating_value`, `user_id`, `beer_id`) VALUES (?, ?, ?)";
   let inserts = [req.body.rating2, req.body.user_id, req.body.beer_id];
   
   sql = mysql.pool.query(sql,inserts,function(error, results, fields){
       if(error){
-          console.log(JSON.stringify(error))
           res.write(JSON.stringify(error));
           res.end();
       }else{
-          // console.log(results)
           res.redirect('/ratings');
       }
   });

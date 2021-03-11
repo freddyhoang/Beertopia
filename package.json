@@ -4,7 +4,9 @@
   "description": "Beer Rating system with a SQL database",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "startProd": "./node_modules/forever/bin/forever start app.js",
+    "stopProd": "./node_modules/forever/bin/forever stop app.js"
   },
   "author": "OSU",
   "license": "ISC",

@@ -1,19 +1,3 @@
-
-// $(document).ready(function(){
-//     $("#user-table").on("click", function() {
-//         console.log('test');
-//         var user_id = e.target.getAttribute('id');
-//         console.log(user_id)
-//         $.ajax({
-//             url: '/users/' + user_id,
-//             type: 'DELETE',
-//             success: function(result){
-//                 window.location.reload();
-//             }
-//         })
-//     })
-// });
-
 // removes alerts upon click
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('alert-time').addEventListener('click', removeAlert);
