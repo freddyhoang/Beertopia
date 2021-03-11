@@ -270,12 +270,23 @@ app.post('/users', function(req, res){
 
   let sql = "INSERT INTO Users (`username`, `email`, `gender`, `first_name`, `last_name`, `date_of_birth`, `zipcode`) VALUES (?,?,?,?,?,?,?)";
   let inserts = [req.body.username, req.body.email, req.body.gender, req.body.fname, req.body.lname, req.body.dob, req.body.zip];
+  let context = {};
+
+  mysql.pool.query("SELECT `first_name`, `username`, `user_id` FROM Users", function(error, results, fields){
+    if(error){
+        res.write(JSON.stringify(error));
+        res.end();
+    }
+    context.users = results;
+  });
   
   sql = mysql.pool.query(sql,inserts,function(error, results, fields){
       if(error){
-          console.log(JSON.stringify(error))
-          res.write(JSON.stringify(error));
-          res.end();
+          console.log(JSON.stringify(error));
+          context.alert = 'This username or email address has already been used!';
+          res.render('users', context);
+          // res.write(JSON.stringify(error));
+          // res.end();
       }else{
           // console.log(results)
           res.redirect('/users');
